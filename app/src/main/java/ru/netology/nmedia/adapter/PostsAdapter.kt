@@ -1,8 +1,10 @@
 package ru.netology.nmedia.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.collection.emptyLongSet
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -56,6 +58,7 @@ class PostViewHolder(
                                 onInteractionListener.onRemove(post)
                                 true
                             }
+
                             R.id.edit -> {
                                 onInteractionListener.onEdit(post)
                                 true
@@ -65,6 +68,14 @@ class PostViewHolder(
                         }
                     }
                 }.show()
+            }
+
+            if(post.saved) {
+                binding.statusPending.visibility = View.GONE
+               binding.like.isEnabled = true
+            } else {
+                binding.statusPending.visibility = View.VISIBLE
+                binding.like.isEnabled = false
             }
 
             like.setOnClickListener {
