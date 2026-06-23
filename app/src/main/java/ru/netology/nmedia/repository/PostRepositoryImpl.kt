@@ -45,15 +45,16 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
                     throw ApiError(response.code(), response.message())
                 } else {
                     val body = response.body() ?: throw ApiError(response.code(), response.message())
-                    val existingEntity = dao.getPostById(generatedLocalId) ?: return
-                    val updatedEntity = existingEntity.copy(
-                        saved = true,
-                        serverId = body.id
+                    dao.getPostById(generatedLocalId) ?: return
+                    dao.removeById(generatedLocalId)
+                    val updatedEntity = PostEntity.fromDto(
+                        body.copy(
+                            saved = true,
+                            serverId = body.id
+                        )
                     )
-                    dao.update(updatedEntity)
+                    dao.insert(updatedEntity)
                 }
-
-
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
