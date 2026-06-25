@@ -85,7 +85,10 @@ class FeedFragment : Fragment() {
 
         binding.fabScrollToTop.setOnClickListener {
             viewModel.markAllNewPostsAsVisible()
-            binding.list.smoothScrollToPosition(0)
+
+            binding.list.post {
+                binding.list.smoothScrollToPosition(0)
+            }
         }
 
         binding.swiperefresh.setOnRefreshListener {
