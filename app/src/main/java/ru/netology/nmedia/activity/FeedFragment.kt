@@ -71,6 +71,25 @@ class FeedFragment : Fragment() {
             adapter.submitList(state.posts)
             binding.emptyText.isVisible = state.empty
         }
+        viewModel.newerCount.observe(viewLifecycleOwner) {
+            println(it)
+        }
+
+        viewModel.newPostsCount.observe(viewLifecycleOwner) {newPostsCount ->
+            if(newPostsCount > 0) {
+                binding.fabScrollToTop.visibility = View.VISIBLE
+            } else {
+                binding.fabScrollToTop.visibility = View.GONE
+            }
+        }
+
+        binding.fabScrollToTop.setOnClickListener {
+            viewModel.markAllNewPostsAsVisible()
+
+            binding.list.post {
+                binding.list.smoothScrollToPosition(0)
+            }
+        }
 
         binding.swiperefresh.setOnRefreshListener {
             viewModel.refreshPosts()
