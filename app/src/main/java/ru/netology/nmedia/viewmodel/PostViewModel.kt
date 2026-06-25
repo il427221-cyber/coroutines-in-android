@@ -25,7 +25,6 @@ private val empty = Post(
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-    // упрощённый вариант
     private val repository: PostRepository =
         PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
 
@@ -100,25 +99,17 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         val post = currentPosts.find{it.id == id}?: return
         viewModelScope.launch{
             try {
-                repository.likeById(id, likedByMe = false)
-                val updatedPostsList = currentPosts.map{
-                    if(it.id == id) post else it
-                }
-                data.value?.copy(posts = updatedPostsList)
-
+                repository.likeById(id, likedByMe = post.likedByMe)
             } catch(_:Exception){
                 _dataState.value = FeedModelState(error = true)
             }
 
         }
     }
-
     fun removeById(id: Long) {
-        val currentPosts = data.value?.posts.orEmpty()
         viewModelScope.launch{
         try {
             repository.removeById(id)
-            data.value?.copy(posts = currentPosts.filter{it.id != id})
         } catch(_:Exception){
             _dataState.value = FeedModelState(error = true)
         }
