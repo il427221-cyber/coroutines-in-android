@@ -2,8 +2,10 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import ru.netology.nmedia.R
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModel
@@ -28,11 +30,21 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository =
         PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
 
-    val data: LiveData<FeedModel> = repository.data.map(::FeedModel)
+    val data: LiveData<FeedModel> = repository.data.map { FeedModel(it, it.isEmpty()) }
+        .catch { it.printStackTrace() }
+        .asLiveData(Dispatchers.Default)
+
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
         get() = _dataState
 
+    val newerCount = data.switchMap {
+        repository.getNewer(it.posts.firstOrNull()?.id ?: 0)
+            .catch { _dataState.postValue(FeedModelState(error = true)) }
+            .asLiveData(Dispatchers.Default)
+    }
+
+    val newPostsCount: LiveData<Int> = repository.getNewPostsCount().asLiveData(Dispatchers.Default)
 
     private val edited = MutableLiveData(empty)
     private val _postCreated = SingleLiveEvent<Unit>()
@@ -54,6 +66,12 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             _dataState.value = FeedModelState()
         } catch (e: Exception) {
             _dataState.value = FeedModelState(error = true)
+        }
+    }
+
+    fun markAllNewPostsAsVisible() {
+        viewModelScope.launch {
+            repository.markAllNewPostsAsVisible()
         }
     }
 
@@ -96,23 +114,24 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun likeById(id: Long) {
         val currentPosts = data.value?.posts.orEmpty()
-        val post = currentPosts.find{it.id == id}?: return
-        viewModelScope.launch{
+        val post = currentPosts.find { it.id == id } ?: return
+        viewModelScope.launch {
             try {
                 repository.likeById(id, likedByMe = post.likedByMe)
-            } catch(_:Exception){
+            } catch (_: Exception) {
                 _dataState.value = FeedModelState(error = true)
             }
 
         }
     }
+
     fun removeById(id: Long) {
-        viewModelScope.launch{
-        try {
-            repository.removeById(id)
-        } catch(_:Exception){
-            _dataState.value = FeedModelState(error = true)
-        }
+        viewModelScope.launch {
+            try {
+                repository.removeById(id)
+            } catch (_: Exception) {
+                _dataState.value = FeedModelState(error = true)
+            }
         }
     }
 }

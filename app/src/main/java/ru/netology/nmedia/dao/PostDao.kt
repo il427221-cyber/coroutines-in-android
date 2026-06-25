@@ -1,17 +1,23 @@
 package ru.netology.nmedia.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 import ru.netology.nmedia.entity.PostEntity
 
 @Dao
 interface PostDao {
-    @Query("SELECT * FROM PostEntity ORDER BY localId DESC")
-    fun getAll(): LiveData<List<PostEntity>>
+    @Query("SELECT * FROM PostEntity WHERE newStatus = 0 ORDER BY localId DESC")
+    fun getAllLocalPosts(): Flow<List<PostEntity>>
+
+    @Query("UPDATE PostEntity SET newStatus = 0 WHERE newStatus = 1")
+    suspend fun markAllNewPostsVisible()
+
+    @Query("SELECT COUNT(*) FROM PostEntity WHERE newStatus = 1")
+    fun getNewPostsCount(): Flow<Int>
 
     @Query("SELECT COUNT(*) == 0 FROM PostEntity")
     suspend fun isEmpty(): Boolean

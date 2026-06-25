@@ -9,6 +9,7 @@ data class Post(
     val likedByMe: Boolean,
     val likes: Int = 0,
     val saved: Boolean,
-    val serverId:Long?
+    val serverId:Long?,
+    val newStatus: Boolean = false
 )
 
