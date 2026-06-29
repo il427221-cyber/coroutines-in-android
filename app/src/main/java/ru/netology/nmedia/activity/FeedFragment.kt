@@ -11,10 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import ru.netology.nmedia.BuildConfig.BASE_URL
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
+import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.viewmodel.PostViewModel
 
@@ -56,6 +58,13 @@ class FeedFragment : Fragment() {
                     Intent.createChooser(intent, getString(R.string.chooser_share_post))
                 startActivity(shareIntent)
             }
+
+            override fun showImage(attachment: String?) {
+                val bundle = Bundle().apply {
+                    putString("imageUrl",attachment)
+                }
+                findNavController().navigate(R.id.action_feedFragment_to_imageViewFragment,bundle)
+            }
         })
         binding.list.adapter = adapter
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
@@ -90,7 +99,6 @@ class FeedFragment : Fragment() {
                 binding.list.smoothScrollToPosition(0)
             }
         }
-
         binding.swiperefresh.setOnRefreshListener {
             viewModel.refreshPosts()
         }

@@ -6,6 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     >
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:ignore="MissingConstraints">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -90,6 +94,16 @@
             app:barrierDirection="bottom"
             app:constraint_referenced_ids="content" />
 
+        <ImageView
+            android:adjustViewBounds="true"
+            android:id="@+id/image"
+            tools:src ="@tools:sample/avatars"
+            app:layout_constraintTop_toBottomOf="@id/footer"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/like"
             android:layout_width="wrap_content"
@@ -97,7 +111,7 @@
             android:checkable="true"
             android:contentDescription="@string/description_post_like"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/footer"
+            app:layout_constraintTop_toBottomOf="@id/image"
             app:icon="@drawable/ic_like_24dp"
             tools:checked="@sample/posts.json/data/likedByMe"
             tools:text="@sample/posts.json/data/likes"
@@ -111,7 +125,7 @@
             android:layout_marginStart="@dimen/common_spacing"
             android:contentDescription="@string/description_post_share"
             app:layout_constraintStart_toEndOf="@+id/like"
-            app:layout_constraintTop_toBottomOf="@id/footer"
+            app:layout_constraintTop_toBottomOf="@id/image"
             app:icon="@drawable/ic_share_24"
             style="@style/Widget.AppTheme.IconButton"
             />
@@ -128,5 +142,10 @@
             app:icon="@drawable/ic_status_pending"
             style="@style/Widget.AppTheme.IconButton"
             />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
 </com.google.android.material.card.MaterialCardView>
+
+
+
