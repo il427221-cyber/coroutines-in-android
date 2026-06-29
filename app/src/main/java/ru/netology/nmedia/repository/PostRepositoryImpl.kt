@@ -44,18 +44,18 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override suspend fun save(post: Post, file: File?) {
         try {
-            file?.let{
+            val postWithAttachment = file?.let{
                 Attachment(upload(it).id, AttachmentType.IMAGE)
             }
                 ?.let{post.copy(attachment = it)
                 }?:post
 
-            val entityToinsert = PostEntity.fromDto(post.copy(saved = false, serverId = null))
+            val entityToinsert = PostEntity.fromDto(postWithAttachment.copy(saved = false, serverId = null))
             val generatedLocalId = dao.insert(entityToinsert)
-            val postToSend: Post = if (post.serverId == null) {
-                post.copy(id = 0L)
+            val postToSend: Post = if (postWithAttachment.serverId == null) {
+                postWithAttachment.copy(id = 0L)
             } else {
-                post.copy(id = post.serverId, attachment = post.attachment)
+                postWithAttachment.copy(id = postWithAttachment.serverId, attachment = postWithAttachment.attachment)
             }
                 val response = PostsApi.service.save(postToSend)
                 if (!response.isSuccessful) {

@@ -106,6 +106,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         }
+        _photo.value = null
         edited.value = empty
     }
 
