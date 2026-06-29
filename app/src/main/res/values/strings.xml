@@ -23,5 +23,8 @@
     <string name="channel_remote_description">Notifications from remote server</string>
     <string name="error_saving">Error saving</string>
     <string name="New_publications">New publications</string>
+    <string name="remove_photo">Remove photo</string>
+    <string name="image_picker_error">Image Picker Error</string>
+    <string name="Back">Назад</string>
 
 </resources>
