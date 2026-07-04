@@ -5,31 +5,74 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.NewPostFragment">
-
-    <EditText
-        android:id="@+id/edit"
+    
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="start|top"
-        android:inputType="textMultiLine"
-        android:background="@android:color/transparent"
-        />
-
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/bottomAppBar"
+        android:layout_height="wrap_content">
+    
+    <LinearLayout
+        android:paddingBottom="?actionBarSize"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
-        />
+        android:layout_height="wrap_content">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/ok"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/description_post_save"
-        app:srcCompat="@drawable/ic_ok_24dp"
-        app:layout_anchor="@id/bottomAppBar"
-        />
+        <EditText
+            android:padding="@dimen/common_spacing"
+            android:id="@+id/edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:gravity="start|top"
+            android:inputType="textMultiLine"
+            tools:text="@tools:sample/lorem[100]" />
+
+        <FrameLayout
+            android:id="@+id/previewContainer"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            
+            <ImageView
+                android:adjustViewBounds="true"
+                android:id="@+id/previewImage"
+                tools:src ="@tools:sample/avatars"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/removePhoto"
+                android:text="@string/remove_photo"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </FrameLayout>
+    </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:background="?colorSurface"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:gravity="center_vertical"
+        android:layout_gravity="bottom">
+        
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/takePhoto"
+            style = "@style/Widget.Material3.Button.IconButton"
+            app:icon="@drawable/ic_outline_add_a_photo_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pickPhoto"
+            style = "@style/Widget.Material3.Button.IconButton"
+            app:icon="@drawable/ic_outline_add_photo_alternate_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

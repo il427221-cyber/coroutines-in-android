@@ -10,6 +10,18 @@ data class Post(
     val likes: Int = 0,
     val saved: Boolean,
     val serverId:Long?,
-    val newStatus: Boolean = false
+    val newStatus: Boolean = false,
+    val attachment: Attachment? = null
 )
+
+data class Attachment(
+    val url: String,
+    val type: AttachmentType
+)
+
+enum class AttachmentType {
+    IMAGE
+}
+
+
 

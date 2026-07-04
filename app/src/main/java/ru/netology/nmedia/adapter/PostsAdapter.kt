@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import androidx.collection.emptyLongSet
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,12 +12,15 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.view.loadCircleCrop
+import ru.netology.nmedia.activity.load
+import ru.netology.nmedia.dto.Attachment
 
 interface OnInteractionListener {
     fun onLike(post: Post) {}
     fun onEdit(post: Post) {}
     fun onRemove(post: Post) {}
     fun onShare(post: Post) {}
+    fun showImage(attachment: String?) {}
 }
 
 class PostsAdapter(
@@ -40,12 +42,23 @@ class PostViewHolder(
     private val onInteractionListener: OnInteractionListener,
 ) : RecyclerView.ViewHolder(binding.root) {
 
+    val BASE_URL = "http://10.0.2.2:9999"
     fun bind(post: Post) {
         binding.apply {
             author.text = post.author
             published.text = post.published.toString()
             content.text = post.content
             avatar.loadCircleCrop("${BuildConfig.BASE_URL}/avatars/${post.authorAvatar}")
+
+            if(post.attachment != null) {
+                with(binding) {
+                    image.load("${BASE_URL}/media/${post.attachment?.url}")
+                    image.visibility = View.VISIBLE
+                }
+            } else {
+                binding.image.visibility = View.GONE
+            }
+
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
 
@@ -85,10 +98,13 @@ class PostViewHolder(
             share.setOnClickListener {
                 onInteractionListener.onShare(post)
             }
+            image.setOnClickListener {
+                val fullImageUrl = "${BASE_URL}/media/${post.attachment?.url}"
+                onInteractionListener.showImage(fullImageUrl)
+            }
         }
     }
 }
-
 class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
     override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
         return oldItem.id == newItem.id
