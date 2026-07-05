@@ -26,4 +26,20 @@
     <string name="New_publications">Свежие записи</string>
     <string name="remove_photo">Удалить фото</string>
     <string name="image_picker_error">Ошибка загрузки изображения</string>
+    <string name="Back">Назад</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="sign_out">Выйти</string>
+    <string name="sign_in">Войти</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="signIn">Войти</string>
+    <string name="confirmation">Подтверждение</string>
+    <string name="sign">Авторизоваться?</string>
+    <string name="log_in">Авторизоваться?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="exit">Выход</string>
+    <string name="are_you_sure">Вы уверены?</string>
+    <string name="name">Имя</string>
+    <string name="repeat_password">Повторите пароль</string>
 </resources>

@@ -20,6 +20,12 @@
         <action
             android:id="@+id/action_feedFragment_to_imageViewFragment"
             app:destination="@id/imageViewFragment" />
+        <action
+            android:id="@+id/action_feedFragment_to_authFragment"
+            app:destination="@id/authFragment" />
+        <action
+            android:id="@+id/action_feedFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
     </fragment>
     <fragment
         android:id="@+id/newPostFragment"
@@ -34,4 +40,20 @@
         android:id="@+id/imageViewFragment"
         android:name="ru.netology.nmedia.activity.ImageViewFragment"
         android:label="ImageViewFragment" />
+    <fragment
+        android:id="@+id/authFragment"
+        android:name="ru.netology.nmedia.activity.AuthFragment"
+        android:label="AuthFragment" >
+        <action
+            android:id="@+id/action_authFragment_to_feedFragment"
+            app:destination="@id/feedFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="ru.netology.nmedia.activity.SignUpFragment"
+        android:label="SignUpFragment" >
+        <action
+            android:id="@+id/action_signUpFragment_to_feedFragment"
+            app:destination="@id/feedFragment" />
+    </fragment>
 </navigation>

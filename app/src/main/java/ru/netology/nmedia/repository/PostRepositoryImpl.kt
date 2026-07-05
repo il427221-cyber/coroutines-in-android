@@ -1,5 +1,6 @@
 package ru.netology.nmedia.repository
 
+import android.content.Context
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -9,6 +10,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
 import ru.netology.nmedia.api.*
+import ru.netology.nmedia.authorization.AuthState
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.AttachmentType
@@ -135,4 +137,26 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override suspend fun markAllNewPostsAsVisible() {
         dao.markAllNewPostsVisible()
     }
+
+     override suspend fun updateUser(): AuthState {
+        val login = "student"
+        val password = "secret"
+        val response = PostsApi.service.updateUser(login = login,pass = password)
+        if (!response.isSuccessful) {
+            throw ApiError(response.code(), response.message())
+        }
+        return response.body() ?: throw ApiError(response.code(), response.message())
+    }
+
+    override suspend fun registerUser(): AuthState {
+        val login = "student"
+        val pass = "secret"
+        val name = "Студент"
+        val response = PostsApi.service.registerUser(login = login, pass = pass, name = name)
+        if (!response.isSuccessful) {
+            throw ApiError(response.code(), response.message())
+        }
+        return response.body() ?: throw ApiError(response.code(), response.message())
+    }
+
 }
