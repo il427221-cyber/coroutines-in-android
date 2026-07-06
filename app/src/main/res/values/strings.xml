@@ -40,4 +40,9 @@
     <string name="are_you_sure">Are you sure?</string>
     <string name="name">Name</string>
     <string name="repeat_password">Repeat password</string>
+    <string name="student" translatable="false">student</string>
+    <string name="secret" translatable="false">secret</string>
+    <string name="student_name" translatable="false">Студент45</string>
+    <string name="student45" translatable="false">student45</string>
+    <string name="secret45" translatable="false">secret45</string>
 </resources>

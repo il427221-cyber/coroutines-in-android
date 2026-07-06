@@ -18,6 +18,15 @@
             android:layout_height="wrap_content"
             android:text="@string/name"
             android:textSize="20sp"
+            tools:ignore="MissingConstraints"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/student_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/student_name"
+            android:textSize="20sp"
             tools:ignore="MissingConstraints"/>
 
         <TextView
@@ -25,6 +34,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/login"
+            android:textSize="20sp"
+            tools:ignore="MissingConstraints"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/student_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/student45"
             android:textSize="20sp"
             tools:ignore="MissingConstraints"/>
 
@@ -34,6 +52,15 @@
             android:layout_height="wrap_content"
             android:text="@string/password"
             android:textSize="20sp"
+            tools:ignore="MissingConstraints"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/student_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/secret45"
+            android:textSize="20sp"
             tools:ignore="MissingConstraints"/>
 
         <TextView
@@ -41,6 +68,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/repeat_password"
+            android:textSize="20sp"
+            tools:ignore="MissingConstraints"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/student_repeat_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/secret45"
             android:textSize="20sp"
             tools:ignore="MissingConstraints"/>
 
@@ -54,10 +90,4 @@
             tools:ignore="MissingConstraints"/>
 
     </LinearLayout>
-
-
-
-
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

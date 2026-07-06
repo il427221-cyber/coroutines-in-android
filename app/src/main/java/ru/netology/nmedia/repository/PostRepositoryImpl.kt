@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
+import ru.netology.nmedia.R
 import ru.netology.nmedia.api.*
 import ru.netology.nmedia.authorization.AuthState
 import ru.netology.nmedia.dao.PostDao
@@ -138,21 +139,16 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
         dao.markAllNewPostsVisible()
     }
 
-     override suspend fun updateUser(): AuthState {
-        val login = "student"
-        val password = "secret"
-        val response = PostsApi.service.updateUser(login = login,pass = password)
+     override suspend fun updateUser(login:String, password: String): AuthState {
+        val response = PostsApi.service.updateUser(login,password)
         if (!response.isSuccessful) {
             throw ApiError(response.code(), response.message())
         }
         return response.body() ?: throw ApiError(response.code(), response.message())
     }
 
-    override suspend fun registerUser(): AuthState {
-        val login = "student"
-        val pass = "secret"
-        val name = "Студент"
-        val response = PostsApi.service.registerUser(login = login, pass = pass, name = name)
+    override suspend fun registerUser(login: String, password: String,name: String): AuthState {
+        val response = PostsApi.service.registerUser(login, password, name)
         if (!response.isSuccessful) {
             throw ApiError(response.code(), response.message())
         }

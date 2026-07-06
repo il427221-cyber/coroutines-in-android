@@ -29,7 +29,9 @@ class AuthFragment : Fragment() {
         )
 
         binding.signIn.setOnClickListener {
-            viewModel.updateUser()
+            val login = binding.loginInput.text.toString()
+            val password = binding.passwordInput.text.toString()
+            viewModel.updateUser(login,password)
             findNavController().navigate(R.id.action_authFragment_to_feedFragment)
         }
         return binding.root

@@ -25,8 +25,6 @@ import ru.netology.nmedia.authorization.AppAuth
 import ru.netology.nmedia.databinding.ActivityAppBinding
 import ru.netology.nmedia.viewmodel.SignInViewModel
 import androidx.appcompat.app.AlertDialog
-import androidx.navigation.fragment.findNavController
-import ru.netology.nmedia.viewmodel.AuthViewModel
 
 class AppActivity : AppCompatActivity() {
     private val signInViewModel: SignInViewModel by viewModels()

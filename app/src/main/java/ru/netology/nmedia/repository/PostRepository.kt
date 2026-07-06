@@ -14,6 +14,6 @@ interface PostRepository {
     suspend fun save(post: Post,file: File?)
     suspend fun removeById(id: Long)
     suspend fun likeById(id: Long, likedByMe: Boolean)
-    suspend fun updateUser(): AuthState
-    suspend fun registerUser(): AuthState
+    suspend fun updateUser(login: String, password: String): AuthState
+    suspend fun registerUser(login: String, password: String,name: String): AuthState
 }

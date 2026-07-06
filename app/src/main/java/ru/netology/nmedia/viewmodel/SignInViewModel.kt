@@ -25,9 +25,9 @@ class SignInViewModel(application: Application) : AndroidViewModel(application) 
     val authenticated: Boolean
         get() = AppAuth.getInstance().authStateFlow.value.id != 0L
 
-    fun updateUser() {
+    fun updateUser(login:String, password:String) {
         viewModelScope.launch {
-                val authResponse = repository.updateUser()
+                val authResponse = repository.updateUser(login,password)
                 AppAuth.getInstance().setAuth(authResponse.id, authResponse.token.toString())
         }
     }

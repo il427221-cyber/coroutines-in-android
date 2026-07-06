@@ -26,9 +26,13 @@ class SignUpFragment: Fragment() {
             container,
             false
         )
+        binding.login.text.toString()
 
         binding.signUp.setOnClickListener {
-           viewModel.registerUser()
+            val name = binding.studentName.text.toString()
+            val login = binding.studentLogin.text.toString()
+            val password = binding.studentPassword.text.toString()
+           viewModel.registerUser(login,password,name)
             findNavController().navigate(R.id.action_signUpFragment_to_feedFragment)
         }
         return binding.root
