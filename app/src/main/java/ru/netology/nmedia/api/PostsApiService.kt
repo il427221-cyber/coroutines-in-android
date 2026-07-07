@@ -79,6 +79,15 @@ interface PostsApiService {
         @Field("name") name: String
     ): Response<AuthState>
 
+    @Multipart
+    @POST("users/registration")
+    suspend fun registerWithPhoto(
+        @Part("login") login: RequestBody,
+        @Part("pass") pass: RequestBody,
+        @Part("name") name: RequestBody,
+        @Part media: MultipartBody.Part,
+    ): Response<AuthState>
+
 }
 object PostsApi {
     val service: PostsApiService by lazy {

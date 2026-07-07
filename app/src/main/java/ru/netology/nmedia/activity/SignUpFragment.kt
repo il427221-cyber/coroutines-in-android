@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import okhttp3.MediaType.Companion.toMediaType
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentRegistrationBinding
 import ru.netology.nmedia.viewmodel.AuthViewModel
@@ -32,7 +33,7 @@ class SignUpFragment: Fragment() {
             val name = binding.studentName.text.toString()
             val login = binding.studentLogin.text.toString()
             val password = binding.studentPassword.text.toString()
-           viewModel.registerUser(login,password,name)
+            viewModel.registerUser(login,password,name)
             findNavController().navigate(R.id.action_signUpFragment_to_feedFragment)
         }
         return binding.root

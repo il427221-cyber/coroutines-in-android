@@ -8,11 +8,14 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody
 import ru.netology.nmedia.authorization.AppAuth
 import ru.netology.nmedia.authorization.AuthState
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
+import java.io.File
 
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -28,8 +31,8 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     fun registerUser(login: String, password: String,name: String) {
         viewModelScope.launch {
-                val registerResponse = repository.registerUser(login,password,name)
-                AppAuth.getInstance().setAuth(registerResponse.id, registerResponse.token.toString())
+            val registerResponse = repository.registerUser(login, password, name)
+            AppAuth.getInstance().setAuth(registerResponse.id, registerResponse.token.toString())
 
 
         }
