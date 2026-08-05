@@ -13,7 +13,6 @@ import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.view.loadCircleCrop
 import ru.netology.nmedia.activity.load
-import ru.netology.nmedia.dto.Attachment
 
 interface OnInteractionListener {
     fun onLike(post: Post) {}
@@ -61,6 +60,8 @@ class PostViewHolder(
 
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
+
+            menu.visibility = if (post.ownedByMe) View.VISIBLE else View.INVISIBLE
 
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {

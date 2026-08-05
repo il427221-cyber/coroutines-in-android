@@ -1,14 +1,19 @@
 package ru.netology.nmedia.repository
 
+import android.content.Context
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
+import ru.netology.nmedia.R
 import ru.netology.nmedia.api.*
+import ru.netology.nmedia.authorization.AuthState
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.AttachmentType
@@ -135,4 +140,38 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override suspend fun markAllNewPostsAsVisible() {
         dao.markAllNewPostsVisible()
     }
+
+     override suspend fun updateUser(login:String, password: String): AuthState {
+        val response = PostsApi.service.updateUser(login,password)
+        if (!response.isSuccessful) {
+            throw ApiError(response.code(), response.message())
+        }
+        return response.body() ?: throw ApiError(response.code(), response.message())
+    }
+
+    override suspend fun registerUser(login: String, password: String,name: String): AuthState {
+        val response = PostsApi.service.registerUser(login, password, name)
+        if (!response.isSuccessful) {
+            throw ApiError(response.code(), response.message())
+        }
+        return response.body() ?: throw ApiError(response.code(), response.message())
+    }
+
+//    override suspend fun registerWithPhoto(
+//        login: RequestBody,
+//        pass: RequestBody,
+//        name: RequestBody,
+//        file: File
+//    ): AuthState {
+//        val response = PostsApi.service.registerWithPhoto(login, pass, name,
+//            MultipartBody.Part.createFormData("netology.jpg","netology.jpg",file.asRequestBody())
+//        )
+//
+//        if (!response.isSuccessful) {
+//            throw ApiError(response.code(), response.message())
+//        }
+//        return response.body() ?: throw ApiError(response.code(), response.message())
+//
+//    }
+
 }

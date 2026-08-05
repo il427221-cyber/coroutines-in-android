@@ -25,6 +25,24 @@
     <string name="New_publications">New publications</string>
     <string name="remove_photo">Remove photo</string>
     <string name="image_picker_error">Image Picker Error</string>
-    <string name="Back">Назад</string>
-
+    <string name="Back">Back</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sign up</string>
+    <string name="sign_out">Sign out</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="signIn">Sign in</string>
+    <string name="confirmation">Confirmation</string>
+    <string name="log_in">Log in?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="exit">Exit</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="name">Name</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="student" translatable="false">student</string>
+    <string name="secret" translatable="false">secret</string>
+    <string name="student_name" translatable="false">Студент45</string>
+    <string name="student45" translatable="false">student45</string>
+    <string name="secret45" translatable="false">secret45</string>
 </resources>

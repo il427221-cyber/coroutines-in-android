@@ -11,18 +11,20 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import ru.netology.nmedia.BuildConfig.BASE_URL
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
-import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.viewmodel.PostViewModel
+import ru.netology.nmedia.viewmodel.SignInViewModel
+import kotlin.getValue
+import androidx.appcompat.app.AlertDialog
 
 class FeedFragment : Fragment() {
 
     private val viewModel: PostViewModel by activityViewModels()
+    private val authViewModel: SignInViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,6 +32,20 @@ class FeedFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val binding = FragmentFeedBinding.inflate(inflater, container, false)
+
+        fun showConfirmationDialog() {
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.confirmation)
+                .setMessage(R.string.log_in)
+                .setPositiveButton(R.string.yes) { dialog,which ->
+                    findNavController().navigate(R.id.action_feedFragment_to_authFragment)
+                }
+                .setNegativeButton(R.string.no) { dialog, which ->
+                    dialog.dismiss()
+                }
+                .setCancelable(false)
+                .show()
+        }
 
         val adapter = PostsAdapter(object : OnInteractionListener {
             override fun onEdit(post: Post) {
@@ -40,7 +56,11 @@ class FeedFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                viewModel.likeById(post.id)
+                if(authViewModel.authenticated) {
+                    viewModel.likeById(post.id)
+                } else {
+                    showConfirmationDialog()
+                }
             }
 
             override fun onRemove(post: Post) {
@@ -66,6 +86,7 @@ class FeedFragment : Fragment() {
                 findNavController().navigate(R.id.action_feedFragment_to_imageViewFragment,bundle)
             }
         })
+
         binding.list.adapter = adapter
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading
@@ -104,7 +125,11 @@ class FeedFragment : Fragment() {
         }
 
         binding.fab.setOnClickListener {
-            findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            if(authViewModel.authenticated) {
+                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            } else {
+                showConfirmationDialog()
+            }
         }
 
         return binding.root
