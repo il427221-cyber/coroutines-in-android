@@ -21,13 +21,19 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.messaging.FirebaseMessaging
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
-import ru.netology.nmedia.authorization.AppAuth
 import ru.netology.nmedia.databinding.ActivityAppBinding
 import ru.netology.nmedia.viewmodel.SignInViewModel
 import androidx.appcompat.app.AlertDialog
+import ru.netology.nmedia.di.DependencyContainer
+import ru.netology.nmedia.viewmodel.ViewModelFactory
 
 class AppActivity : AppCompatActivity() {
-    private val signInViewModel: SignInViewModel by viewModels()
+    private val dependencyContainer = DependencyContainer.getInstance()
+    private val signInViewModel: SignInViewModel by viewModels(
+        factoryProducer = {
+            ViewModelFactory(dependencyContainer.repository,dependencyContainer.appAuth)
+        }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,7 +89,7 @@ class AppActivity : AppCompatActivity() {
                     .setTitle(R.string.exit)
                     .setMessage(R.string.are_you_sure)
                     .setPositiveButton(R.string.yes) { dialog,which ->
-                        AppAuth.getInstance().removeAuth()
+                        dependencyContainer.appAuth.removeAuth()
                     }
                     .setNegativeButton(R.string.no) { dialog, which ->
                         dialog.dismiss()

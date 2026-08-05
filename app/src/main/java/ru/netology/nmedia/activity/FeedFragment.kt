@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
@@ -20,11 +19,25 @@ import ru.netology.nmedia.viewmodel.PostViewModel
 import ru.netology.nmedia.viewmodel.SignInViewModel
 import kotlin.getValue
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.viewModels
+import ru.netology.nmedia.di.DependencyContainer
+import ru.netology.nmedia.viewmodel.ViewModelFactory
 
 class FeedFragment : Fragment() {
 
-    private val viewModel: PostViewModel by activityViewModels()
-    private val authViewModel: SignInViewModel by activityViewModels()
+    //private val viewModel: PostViewModel by activityViewModels()
+    private val dependencyContainer = DependencyContainer.getInstance()
+    private val viewModel: PostViewModel by viewModels(
+        factoryProducer = {
+            ViewModelFactory(dependencyContainer.repository,dependencyContainer.appAuth)
+        }
+    )
+    //private val authViewModel: SignInViewModel by activityViewModels()
+    private val authViewModel: SignInViewModel by viewModels(
+        factoryProducer = {
+            ViewModelFactory(dependencyContainer.repository,dependencyContainer.appAuth)
+        }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
