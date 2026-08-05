@@ -1,0 +1,20 @@
+$kind: http-request
+name: Send push
+description: ""
+url: http://localhost:9999/api/pushes?token=fMGP9oX7TrGEqNfjUk30g_:APA91bGH1jb2H-EwmaUxMqM637ssobnhXqPK8pHGp7TvIfpCpnQ-zW9XufSot0Nr7fhEsxDeZ8h1PSoSPm0JnbMgF79lSDOhQ-ad9POi_EgeuCx2Ntc5g0k
+method: POST
+queryParams:
+  - key: token
+    value: fMGP9oX7TrGEqNfjUk30g_:APA91bGH1jb2H-EwmaUxMqM637ssobnhXqPK8pHGp7TvIfpCpnQ-zW9XufSot0Nr7fhEsxDeZ8h1PSoSPm0JnbMgF79lSDOhQ-ad9POi_EgeuCx2Ntc5g0k
+    disabled: false
+    description: ""
+body:
+  type: json
+  content: "{\r
+
+    \    \"recipientId\": 5,\r
+
+    \    \"content\": \"wow test!IkkI!\"\r
+
+    }"
+order: 1783669514719

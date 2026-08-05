@@ -1,17 +1,13 @@
 package ru.netology.nmedia.repository
 
-import android.content.Context
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
-import ru.netology.nmedia.R
 import ru.netology.nmedia.api.*
 import ru.netology.nmedia.authorization.AuthState
 import ru.netology.nmedia.dao.PostDao
@@ -29,12 +25,16 @@ import ru.netology.nmedia.error.UnknownError
 import java.io.File
 import kotlin.time.Duration.Companion.milliseconds
 
-class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
+class PostRepositoryImpl(
+    private val dao: PostDao,
+    //Передаем PostApiService
+    private val apiService: PostsApiService
+    ) : PostRepository {
     override val data = dao.getAllLocalPosts().map(List<PostEntity>::toDto)
 
     override suspend fun getAll() {
         try {
-            val response = PostsApi.service.getAll()
+            val response = apiService.getAll()
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -62,7 +62,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
             } else {
                 postWithAttachment.copy(id = postWithAttachment.serverId, attachment = postWithAttachment.attachment)
             }
-                val response = PostsApi.service.save(postToSend)
+                val response = apiService.save(postToSend)
                 if (!response.isSuccessful) {
                     throw ApiError(response.code(), response.message())
                 } else {
@@ -85,7 +85,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     }
 
     private suspend fun upload(file: File): Media =
-        PostsApi.service.saveMedia(
+        apiService.saveMedia(
             MultipartBody.Part.createFormData("file","file",file.asRequestBody())
         )
 
@@ -94,7 +94,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override suspend fun removeById(id: Long) {
         try{
             dao.removeById(id)
-            PostsApi.service.removeById(id)
+            apiService.removeById(id)
         } catch(e:Exception) {
             throw NetworkError
         } catch(e:Exception) {
@@ -107,9 +107,9 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
         try{
             dao.likeById(id)
             if(likedByMe)
-                PostsApi.service.dislikeById(id)
+                apiService.dislikeById(id)
              else
-                PostsApi.service.likeById(id)
+                apiService.likeById(id)
         } catch (e:Exception){
             dao.likeById(id)
             throw NetworkError
@@ -122,7 +122,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override fun getNewer(id: Long): Flow<Int> = flow{
         while(true) {
             delay(10_000.milliseconds)
-            val response = PostsApi.service.getNewer(id)
+            val response = apiService.getNewer(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -142,7 +142,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     }
 
      override suspend fun updateUser(login:String, password: String): AuthState {
-        val response = PostsApi.service.updateUser(login,password)
+        val response = apiService.updateUser(login,password)
         if (!response.isSuccessful) {
             throw ApiError(response.code(), response.message())
         }
@@ -150,28 +150,11 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     }
 
     override suspend fun registerUser(login: String, password: String,name: String): AuthState {
-        val response = PostsApi.service.registerUser(login, password, name)
+        val response = apiService.registerUser(login, password, name)
         if (!response.isSuccessful) {
             throw ApiError(response.code(), response.message())
         }
         return response.body() ?: throw ApiError(response.code(), response.message())
     }
-
-//    override suspend fun registerWithPhoto(
-//        login: RequestBody,
-//        pass: RequestBody,
-//        name: RequestBody,
-//        file: File
-//    ): AuthState {
-//        val response = PostsApi.service.registerWithPhoto(login, pass, name,
-//            MultipartBody.Part.createFormData("netology.jpg","netology.jpg",file.asRequestBody())
-//        )
-//
-//        if (!response.isSuccessful) {
-//            throw ApiError(response.code(), response.message())
-//        }
-//        return response.body() ?: throw ApiError(response.code(), response.message())
-//
-//    }
 
 }
