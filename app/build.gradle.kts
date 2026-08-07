@@ -2,9 +2,10 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    //alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.google.services)
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -17,7 +18,6 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -74,4 +74,6 @@ dependencies {
     implementation(libs.imagepicker)
     implementation(libs.ucrop)
     coreLibraryDesugaring(libs.desugaring)
+    implementation(libs.hilt.android)
+    ksp("com.google.dagger:hilt-compiler:2.60.1")
 }

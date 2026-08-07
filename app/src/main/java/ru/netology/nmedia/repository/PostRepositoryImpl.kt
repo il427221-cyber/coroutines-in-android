@@ -23,9 +23,10 @@ import ru.netology.nmedia.error.AppError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
 import java.io.File
+import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
-class PostRepositoryImpl(
+class PostRepositoryImpl @Inject constructor(
     private val dao: PostDao,
     //Передаем PostApiService
     private val apiService: PostsApiService
