@@ -1,21 +1,31 @@
 package ru.netology.nmedia.authorization
 
 import android.content.Context
-import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import ru.netology.nmedia.di.DependencyContainer
+import ru.netology.nmedia.api.PostsApiService
 import ru.netology.nmedia.dto.PushToken
+import ru.netology.nmedia.service.FcmModule
+import javax.inject.Inject
+import javax.inject.Singleton
 
 data class AuthState(
     val id: Long = 0,
     val token: String? = null
 )
 
-class AppAuth (context: Context) {
+@Singleton
+class AppAuth @Inject constructor (
+    @ApplicationContext
+    private val context: Context) {
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
     private val idKey = "id"
     private val tokenKey = "token"
@@ -61,12 +71,22 @@ class AppAuth (context: Context) {
         sendPushToken()
     }
 
+    @InstallIn(/* ...value = */ SingletonComponent::class)
+    @EntryPoint
+    interface AppAuthEntryPoint {
+        fun getApiService(): PostsApiService
+    }
+
     fun sendPushToken(token:String? = null) {
         CoroutineScope(Dispatchers.Default).launch {
             runCatching {
-                DependencyContainer.getInstance().apiService.sendPushToken(
+                val entryPoint = EntryPointAccessors.fromApplication(context, AppAuthEntryPoint:: class.java)
+                val fcmPoint = EntryPointAccessors.fromApplication(context, FcmModule.FireBaseEntryPoint::class.java)
+
+                entryPoint.getApiService().sendPushToken(
                     PushToken(
-                        token?: FirebaseMessaging.getInstance().token.await()
+                        token?: fcmPoint.getFCMService().token.await()
+
                     )
                 )
             }
