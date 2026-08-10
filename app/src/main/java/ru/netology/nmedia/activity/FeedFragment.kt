@@ -20,24 +20,13 @@ import ru.netology.nmedia.viewmodel.SignInViewModel
 import kotlin.getValue
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
-import ru.netology.nmedia.di.DependencyContainer
-import ru.netology.nmedia.viewmodel.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+
+@AndroidEntryPoint
 class FeedFragment : Fragment() {
-
-    //private val viewModel: PostViewModel by activityViewModels()
-    private val dependencyContainer = DependencyContainer.getInstance()
-    private val viewModel: PostViewModel by viewModels(
-        factoryProducer = {
-            ViewModelFactory(dependencyContainer.repository,dependencyContainer.appAuth)
-        }
-    )
-    //private val authViewModel: SignInViewModel by activityViewModels()
-    private val authViewModel: SignInViewModel by viewModels(
-        factoryProducer = {
-            ViewModelFactory(dependencyContainer.repository,dependencyContainer.appAuth)
-        }
-    )
+    private val viewModel: PostViewModel by viewModels()
+    private val authViewModel: SignInViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

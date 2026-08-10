@@ -8,33 +8,6 @@ import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.PushToken
 
-//private const val BASE_URL = "${BuildConfig.BASE_URL}/api/slow/"
-//
-//private val logging = HttpLoggingInterceptor().apply {
-//    if (BuildConfig.DEBUG) {
-//        level = HttpLoggingInterceptor.Level.BODY
-//    }
-//}
-//
-//private val okhttp = OkHttpClient.Builder()
-//    .addInterceptor(logging)
-//    .addInterceptor {chain ->
-//        AppAuth.getInstance().authStateFlow.value.token?.let{token ->
-//            val newRequest = chain.request().newBuilder()
-//                .addHeader("Authorization",token)
-//                .build()
-//            return@addInterceptor chain.proceed(newRequest)
-//        }
-//        chain.proceed(chain.request())
-//    }
-//    .build()
-//
-//private val retrofit = Retrofit.Builder()
-//    .addConverterFactory(GsonConverterFactory.create())
-//    .baseUrl(BASE_URL)
-//    .client(okhttp)
-//    .build()
-
 interface PostsApiService {
     @GET("posts")
     suspend fun getAll(): Response<List<Post>>
@@ -77,8 +50,3 @@ interface PostsApiService {
 suspend fun sendPushToken(@Body token: PushToken)
 
 }
-//object PostsApi {
-//    val service: PostsApiService by lazy {
-//        retrofit.create(PostsApiService::class.java)
-//    }
-//}

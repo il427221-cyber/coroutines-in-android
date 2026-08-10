@@ -7,24 +7,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentAuthBinding
-import ru.netology.nmedia.di.DependencyContainer
 import ru.netology.nmedia.viewmodel.SignInViewModel
-import ru.netology.nmedia.viewmodel.ViewModelFactory
 import kotlin.getValue
 
 
+@AndroidEntryPoint
 class AuthFragment : Fragment() {
-
-    private val dependencyContainer = DependencyContainer.getInstance()
-
-    //private val viewModel: SignInViewModel by activityViewModels()
-    private val viewModel: SignInViewModel by viewModels(
-        factoryProducer = {
-            ViewModelFactory(dependencyContainer.repository,dependencyContainer.appAuth)
-        }
-    )
+    private val viewModel: SignInViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

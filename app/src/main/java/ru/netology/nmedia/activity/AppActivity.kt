@@ -17,23 +17,23 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.findNavController
 import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
-import com.google.firebase.messaging.FirebaseMessaging
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.databinding.ActivityAppBinding
 import ru.netology.nmedia.viewmodel.SignInViewModel
 import androidx.appcompat.app.AlertDialog
-import ru.netology.nmedia.di.DependencyContainer
-import ru.netology.nmedia.viewmodel.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.EntryPointAccessors
+import ru.netology.nmedia.authorization.AppAuth
+import ru.netology.nmedia.service.FcmModule
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AppActivity : AppCompatActivity() {
-    private val dependencyContainer = DependencyContainer.getInstance()
-    private val signInViewModel: SignInViewModel by viewModels(
-        factoryProducer = {
-            ViewModelFactory(dependencyContainer.repository,dependencyContainer.appAuth)
-        }
-    )
+
+    @Inject
+    lateinit var appAuth: AppAuth
+    private val signInViewModel: SignInViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,7 +89,7 @@ class AppActivity : AppCompatActivity() {
                     .setTitle(R.string.exit)
                     .setMessage(R.string.are_you_sure)
                     .setPositiveButton(R.string.yes) { dialog,which ->
-                        dependencyContainer.appAuth.removeAuth()
+                        appAuth.removeAuth()
                     }
                     .setNegativeButton(R.string.no) { dialog, which ->
                         dialog.dismiss()
@@ -136,8 +136,10 @@ class AppActivity : AppCompatActivity() {
         requestPermissions(arrayOf(permission), 1)
     }
 
-    private fun checkGoogleApiAvailability() {
-        with(GoogleApiAvailability.getInstance()) {
+    private fun checkGoogleApiAvailability () {
+        val googleEntryPoint = EntryPointAccessors.fromApplication(this@AppActivity, GoogleAPIModule.GoogleAPIEntryPoint::class.java)
+        with(googleEntryPoint.getGoogleApiService()) {
+
             val code = isGooglePlayServicesAvailable(this@AppActivity)
             if (code == ConnectionResult.SUCCESS) {
                 return@with
@@ -150,7 +152,8 @@ class AppActivity : AppCompatActivity() {
                 .show()
         }
 
-        FirebaseMessaging.getInstance().token.addOnSuccessListener {
+        val fcmPoint = EntryPointAccessors.fromApplication(this@AppActivity, FcmModule.FireBaseEntryPoint::class.java)
+        fcmPoint.getFCMService().token.addOnSuccessListener {
             println(it)
         }
     }
