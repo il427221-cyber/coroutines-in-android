@@ -15,14 +15,13 @@ import javax.inject.Inject
 @HiltViewModel
 class SignInViewModel @Inject constructor(
     private val repository: PostRepository,
-    appAuth: AppAuth
+    private val appAuth: AppAuth
 ) : ViewModel() {
 
-    @Inject
-    lateinit var appAuth: AppAuth
+//    @Inject
+//    lateinit var appAuth: AppAuth
 
-    val data: LiveData<AuthState> = appAuth
-        .authStateFlow
+    val data: LiveData<AuthState> = appAuth.authStateFlow
         .asLiveData(Dispatchers.Default)
     val authenticated: Boolean
         get() = appAuth.authStateFlow.value.id != 0L

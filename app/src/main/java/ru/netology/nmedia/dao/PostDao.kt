@@ -45,6 +45,5 @@ interface PostDao {
            WHERE localId = :id;
         """
     )
-
     suspend fun likeById(id: Long)
 }
