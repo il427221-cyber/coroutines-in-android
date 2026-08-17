@@ -54,7 +54,6 @@ data class PostEntity(
                 newStatus = dto.newStatus,
                 attachment = dto.attachment
             )
-
     }
 }
 

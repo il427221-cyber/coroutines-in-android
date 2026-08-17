@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,11 +16,11 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
         private val repository: PostRepository,
-        appAuth: AppAuth
+        private val appAuth: AppAuth
     ) : ViewModel() {
 
-    @Inject
-    lateinit var appAuth: AppAuth
+//    @Inject
+//    lateinit var appAuth: AppAuth
 
     val data: LiveData<AuthState> = appAuth.authStateFlow
         .asLiveData(Dispatchers.Default)

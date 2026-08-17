@@ -1,14 +1,19 @@
 package ru.netology.nmedia.repository
 
-import kotlinx.coroutines.delay
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
 import ru.netology.nmedia.api.*
+import ru.netology.nmedia.authorization.AppAuth
 import ru.netology.nmedia.authorization.AuthState
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.Attachment
@@ -16,22 +21,30 @@ import ru.netology.nmedia.dto.AttachmentType
 import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.PostEntity
-import ru.netology.nmedia.entity.toDto
 import ru.netology.nmedia.entity.toEntity
 import ru.netology.nmedia.error.ApiError
-import ru.netology.nmedia.error.AppError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
 import java.io.File
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.milliseconds
 
 class PostRepositoryImpl @Inject constructor(
     private val dao: PostDao,
-    //Передаем PostApiService
-    private val apiService: PostsApiService
+    private val apiService: PostsApiService,
+    private val appAuth: AppAuth,
     ) : PostRepository {
-    override val data = dao.getAllLocalPosts().map(List<PostEntity>::toDto)
+
+    private val pagingSource = PostPagingSource(apiService, appAuth)
+
+    @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
+    override val data: Flow<PagingData<Post>> = appAuth.authStateFlow.flatMapLatest { authState ->
+            Pager(config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+                pagingSourceFactory = { PostPagingSource(apiService, appAuth) }
+            ).flow
+
+        }
+        .flowOn(Dispatchers.Default)
+
 
     override suspend fun getAll() {
         try {
@@ -84,13 +97,10 @@ class PostRepositoryImpl @Inject constructor(
             throw UnknownError
         }
     }
-
     private suspend fun upload(file: File): Media =
         apiService.saveMedia(
             MultipartBody.Part.createFormData("file","file",file.asRequestBody())
         )
-
-
 
     override suspend fun removeById(id: Long) {
         try{
@@ -101,38 +111,23 @@ class PostRepositoryImpl @Inject constructor(
         } catch(e:Exception) {
             throw UnknownError
         }
-
     }
 
     override suspend fun likeById(id: Long, likedByMe: Boolean) {
         try{
             dao.likeById(id)
-            if(likedByMe)
+            if(likedByMe) {
                 apiService.dislikeById(id)
-             else
+            } else {
                 apiService.likeById(id)
+            }
+            pagingSource.invalidate()
+
         } catch (e:Exception){
             dao.likeById(id)
             throw NetworkError
-        } catch (e:Exception) {
-            dao.likeById(id)
-            throw UnknownError
         }
     }
-
-    override fun getNewer(id: Long): Flow<Int> = flow{
-        while(true) {
-            delay(10_000.milliseconds)
-            val response = apiService.getNewer(id)
-            if (!response.isSuccessful) {
-                throw ApiError(response.code(), response.message())
-            }
-            val body = response.body() ?: throw ApiError(response.code(), response.message())
-            dao.insert(body.map { it.copy(serverId = it.id, saved = true, newStatus = true) }.toEntity())
-            emit(body.size)
-        }
-    }.catch{e -> throw AppError.from(e) }
-
 
     override fun getNewPostsCount(): Flow<Int> {
         return dao.getNewPostsCount()
@@ -157,5 +152,4 @@ class PostRepositoryImpl @Inject constructor(
         }
         return response.body() ?: throw ApiError(response.code(), response.message())
     }
-
 }

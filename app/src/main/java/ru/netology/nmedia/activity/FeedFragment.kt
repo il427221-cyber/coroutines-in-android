@@ -20,7 +20,12 @@ import ru.netology.nmedia.viewmodel.SignInViewModel
 import kotlin.getValue
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -34,7 +39,7 @@ class FeedFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val binding = FragmentFeedBinding.inflate(inflater, container, false)
-
+        
         fun showConfirmationDialog() {
             AlertDialog.Builder(requireContext())
                 .setTitle(R.string.confirmation)
@@ -59,7 +64,7 @@ class FeedFragment : Fragment() {
 
             override fun onLike(post: Post) {
                 if(authViewModel.authenticated) {
-                    viewModel.likeById(post.id)
+                    viewModel.likeById(post.id,post.likedByMe)
                 } else {
                     showConfirmationDialog()
                 }
@@ -99,12 +104,18 @@ class FeedFragment : Fragment() {
                     .show()
             }
         }
-        viewModel.data.observe(viewLifecycleOwner) { state ->
-            adapter.submitList(state.posts)
-            binding.emptyText.isVisible = state.empty
+        lifecycleScope.launch{
+            viewModel.data.collectLatest {pagingData ->
+                adapter.submitData(pagingData)
+            }
         }
-        viewModel.newerCount.observe(viewLifecycleOwner) {
-            println(it)
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.refreshPostsEvent.collectLatest {
+                    adapter.refresh()
+                }
+            }
         }
 
         viewModel.newPostsCount.observe(viewLifecycleOwner) {newPostsCount ->

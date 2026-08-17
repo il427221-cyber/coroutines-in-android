@@ -30,7 +30,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AppActivity : AppCompatActivity() {
-
     @Inject
     lateinit var appAuth: AppAuth
     private val signInViewModel: SignInViewModel by viewModels()

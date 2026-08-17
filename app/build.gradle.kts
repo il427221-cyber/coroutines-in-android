@@ -76,4 +76,7 @@ dependencies {
     coreLibraryDesugaring(libs.desugaring)
     implementation(libs.hilt.android)
     ksp("com.google.dagger:hilt-compiler:2.60.1")
+    implementation(libs.androidx.paging.runtime)
+    implementation("androidx.room:room-paging:2.8.4")
+
 }
