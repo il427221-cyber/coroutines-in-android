@@ -15,12 +15,10 @@ data class Post(
     val attachment: Attachment? = null,
     val ownedByMe: Boolean = false
 )
-
 data class Attachment(
     val url: String,
     val type: AttachmentType
 )
-
 enum class AttachmentType {
     IMAGE
 }
