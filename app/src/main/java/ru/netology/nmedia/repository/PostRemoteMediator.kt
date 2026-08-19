@@ -31,8 +31,12 @@ class PostRemoteMediator(
         try {
             val response = when (loadType) {
                 LoadType.REFRESH -> {
-                    val id = postRemoteKeyDao.max() ?: return MediatorResult.Success(false)
-                    apiService.getAfter(id, state.config.pageSize)
+                    val maxId = postRemoteKeyDao.max()
+                    if (maxId == null) {
+                        apiService.getLatest(state.config.pageSize)
+                    } else {
+                        apiService.getAfter(maxId, state.config.pageSize)
+                    }
                 }
 
                 LoadType.PREPEND -> {
@@ -55,14 +59,23 @@ class PostRemoteMediator(
             appDb.withTransaction {
                 when (loadType) {
                     LoadType.REFRESH -> {
-                        //Записываем последний ключ
-                        postRemoteKeyDao.deleteByType(PostRemoteKeyEntity.KeyType.AFTER)
-                        postRemoteKeyDao.insert(
-                            PostRemoteKeyEntity(
-                                PostRemoteKeyEntity.KeyType.AFTER,
-                                body.first().id
+                        if (body.isNotEmpty()) {
+                            postRemoteKeyDao.deleteByType(PostRemoteKeyEntity.KeyType.AFTER)
+                            postRemoteKeyDao.insert(
+                                PostRemoteKeyEntity(
+                                    PostRemoteKeyEntity.KeyType.AFTER,
+                                    body.first().id)
                             )
-                        )
+                            val maxId = postRemoteKeyDao.max()
+
+                            if (maxId == null) { // Если это была первая загрузка
+                                postRemoteKeyDao.deleteByType(PostRemoteKeyEntity.KeyType.BEFORE)
+                                postRemoteKeyDao.insert(
+                                    PostRemoteKeyEntity(PostRemoteKeyEntity.KeyType.BEFORE, body.last().id)
+                                )
+                            }
+                        }
+
                     }
 
                     LoadType.PREPEND -> {

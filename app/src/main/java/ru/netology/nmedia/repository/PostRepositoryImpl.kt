@@ -57,10 +57,9 @@ class PostRepositoryImpl @Inject constructor(
         }
         .flowOn(Dispatchers.Default)
 
-
-    override suspend fun getAll() {
+    override suspend fun getLatest() {
         try {
-            val response = apiService.getAll()
+            val response = apiService.getLatest(5)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
