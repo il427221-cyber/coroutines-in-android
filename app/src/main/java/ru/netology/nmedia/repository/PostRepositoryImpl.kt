@@ -4,11 +4,13 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
@@ -16,6 +18,8 @@ import ru.netology.nmedia.api.*
 import ru.netology.nmedia.authorization.AppAuth
 import ru.netology.nmedia.authorization.AuthState
 import ru.netology.nmedia.dao.PostDao
+import ru.netology.nmedia.dao.PostRemoteKeyDao
+import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.AttachmentType
 import ru.netology.nmedia.dto.Media
@@ -32,23 +36,30 @@ class PostRepositoryImpl @Inject constructor(
     private val dao: PostDao,
     private val apiService: PostsApiService,
     private val appAuth: AppAuth,
-    ) : PostRepository {
+    postRemoteKeyDao: PostRemoteKeyDao,
+    appDb: AppDb
 
-    private val pagingSource = PostPagingSource(apiService, appAuth)
+) : PostRepository {
+    private val pagingSource = dao.getPagingSource()
 
     @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
-    override val data: Flow<PagingData<Post>> = appAuth.authStateFlow.flatMapLatest { authState ->
+    override val data: Flow<PagingData<Post>>
+            = appAuth.authStateFlow.flatMapLatest { authState ->
             Pager(config = PagingConfig(pageSize = 10, enablePlaceholders = false),
-                pagingSourceFactory = { PostPagingSource(apiService, appAuth) }
-            ).flow
-
+                pagingSourceFactory = { dao.getPagingSource() },
+                remoteMediator = PostRemoteMediator(
+                    apiService = apiService,
+                    postDao = dao,
+                    appAuth = appAuth,
+                    postRemoteKeyDao = postRemoteKeyDao,
+                    appDb = appDb)
+            ).flow.map{it.map(PostEntity::toDto)}
         }
         .flowOn(Dispatchers.Default)
 
-
-    override suspend fun getAll() {
+    override suspend fun getLatest() {
         try {
-            val response = apiService.getAll()
+            val response = apiService.getLatest(5)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
