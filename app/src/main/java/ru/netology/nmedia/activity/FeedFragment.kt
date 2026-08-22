@@ -97,20 +97,21 @@ class FeedFragment : Fragment() {
             }
         })
 
-            val loadingStateAdapter = PostLoadingStateAdapter { adapter.retry()}
-            val combinedAdapter = adapter .withLoadStateHeaderAndFooter(
-                header = loadingStateAdapter,
-                footer = loadingStateAdapter
-            )
-            binding.list.adapter = combinedAdapter
+        val headerLoadStateAdapter = PostLoadingStateAdapter { adapter.retry()}
+        val footerLoadStateAdapter = PostLoadingStateAdapter { adapter.retry()}
 
+        val combinedAdapter = adapter .withLoadStateHeaderAndFooter(
+                header = headerLoadStateAdapter,
+                footer = footerLoadStateAdapter
+            )
+
+        binding.list.adapter = combinedAdapter
 
         viewLifecycleOwner.lifecycleScope.launch {
                 adapter.loadStateFlow.collectLatest {state ->
                     binding.swiperefresh.isRefreshing =
                         state.refresh is LoadState.Loading
                 }
-
         }
 
         binding.swiperefresh.setOnRefreshListener {
