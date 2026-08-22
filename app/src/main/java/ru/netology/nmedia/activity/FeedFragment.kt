@@ -23,9 +23,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.paging.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import ru.netology.nmedia.adapter.PostLoadingStateAdapter
 
 
 @AndroidEntryPoint
@@ -39,7 +41,8 @@ class FeedFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val binding = FragmentFeedBinding.inflate(inflater, container, false)
-        
+
+
         fun showConfirmationDialog() {
             AlertDialog.Builder(requireContext())
                 .setTitle(R.string.confirmation)
@@ -94,7 +97,27 @@ class FeedFragment : Fragment() {
             }
         })
 
-        binding.list.adapter = adapter
+        val headerLoadStateAdapter = PostLoadingStateAdapter { adapter.retry()}
+        val footerLoadStateAdapter = PostLoadingStateAdapter { adapter.retry()}
+
+        val combinedAdapter = adapter .withLoadStateHeaderAndFooter(
+                header = headerLoadStateAdapter,
+                footer = footerLoadStateAdapter
+            )
+
+        binding.list.adapter = combinedAdapter
+
+        viewLifecycleOwner.lifecycleScope.launch {
+                adapter.loadStateFlow.collectLatest {state ->
+                    binding.swiperefresh.isRefreshing =
+                        state.refresh is LoadState.Loading
+                }
+        }
+
+        binding.swiperefresh.setOnRefreshListener {
+            adapter.refresh()
+        }
+
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading
             binding.swiperefresh.isRefreshing = state.refreshing
@@ -132,9 +155,6 @@ class FeedFragment : Fragment() {
             binding.list.post {
                 binding.list.smoothScrollToPosition(0)
             }
-        }
-        binding.swiperefresh.setOnRefreshListener {
-            viewModel.refreshPosts()
         }
 
         binding.fab.setOnClickListener {

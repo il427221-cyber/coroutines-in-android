@@ -1,5 +1,6 @@
 package ru.netology.nmedia.repository
 
+
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -40,13 +41,12 @@ class PostRemoteMediator(
                 }
 
                 LoadType.PREPEND -> {
-                    return MediatorResult.Success(endOfPaginationReached = true)
+                    return MediatorResult.Success(endOfPaginationReached = false)
                 }
 
                 LoadType.APPEND -> {
                     val id = postRemoteKeyDao.min()?:
                     return MediatorResult.Success(false)
-
                     apiService.getBefore(id, state.config.pageSize)
                 }
             }
